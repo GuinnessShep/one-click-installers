@@ -10,8 +10,8 @@ conda_env_path = os.path.join(script_dir, "installer_files", "env")
 
 # Use this to set your command-line flags. For the full list, see:
 # https://github.com/oobabooga/text-generation-webui/#starting-the-web-ui
-# Example: CMD_FLAGS = '--chat --listen'
-CMD_FLAGS = '--chat --model LLaMA --auto-devices --extensions gallery send_pictures character_bias'
+# Example: CMD_FLAGS = '--chat --listen '
+CMD_FLAGS = ''
 
 
 # Allows users to set flags in "OOBABOOGA_FLAGS" environment variable
@@ -66,32 +66,16 @@ def check_env():
         print("Create an environment for this project and activate it. Exiting...")
         sys.exit()
 
+
 def install_dependencies():
-    # Set NVIDIA as the GPU option
-    gpuchoice = "a"
+    # By default, install dependencies for NVIDIA GPU
+    print("Installing dependencies for NVIDIA GPU...")
 
-    if gpuchoice == "d":
-        print_big_message("Once the installation ends, make sure to open webui.py with a text editor\nand add the --cpu flag to CMD_FLAGS.")
-
-    # Install the version of PyTorch needed
-    if gpuchoice == "a":
-        run_cmd('conda install -y -k cuda ninja git -c nvidia/label/cuda-11.7.0 -c nvidia && python -m pip install torch==2.0.1+cu117 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117', assert_success=True, environment=True)
-    elif gpuchoice == "b":
-        print("AMD GPUs are not supported. Exiting...")
-        sys.exit()
-    elif gpuchoice == "c":
-        run_cmd("conda install -y -k ninja git && python -m pip install torch torchvision torchaudio", assert_success=True, environment=True)
-    elif gpuchoice == "d":
-        if sys.platform.startswith("linux"):
-            run_cmd("conda install -y -k ninja git && python -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu", assert_success=True, environment=True)
-        else:
-            run_cmd("conda install -y -k ninja git && python -m pip install torch torchvision torchaudio", assert_success=True, environment=True)
-    else:
-        print("Invalid choice. Exiting...")
-        sys.exit()
+    # Install the version of PyTorch needed for NVIDIA
+    run_cmd('conda install -y -k cuda ninja git -c nvidia/label/cuda-11.7.0 -c nvidia && python -m pip install torch==2.0.1+cu117 torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117', assert_success=True, environment=True)
 
     # Clone webui to our computer
-    run_cmd("git clone https://github.com/GuinnessShep/text-generation-webui.git", assert_success=True, environment=True)
+    run_cmd("git clone https://github.com/oobabooga/text-generation-webui.git", assert_success=True, environment=True)
 
     # Install the webui dependencies
     update_dependencies()
